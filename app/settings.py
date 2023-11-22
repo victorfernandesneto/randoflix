@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'tokens',
     'movies',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
