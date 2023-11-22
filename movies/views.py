@@ -65,7 +65,7 @@ class MovieRandomizerView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        queryset = Movie.objects.filter(user=request.user)
+        queryset = Movie.objects.filter(user=request.user).filter(watched=False)
         if queryset.exists():
             random_movie = random.choice(queryset)
             serializer = MovieSerializer(random_movie)
