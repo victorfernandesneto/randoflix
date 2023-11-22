@@ -1,6 +1,7 @@
 import random
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from movies.models import Movie
 from movies.serializers import MovieSerializer
@@ -26,8 +27,31 @@ class MovieRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         return Movie.objects.get(pk=self.kwargs['pk'])
     
+
+    def get(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        if instance.user != self.request.user:
+            raise PermissionDenied("Permission denied.")
+
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+    
+    
+    def perform_update(self, serializer):
+        instance = self.get_object()
+
+        if instance.user != self.request.user:
+            raise PermissionDenied("Permission denied.")
+
+        serializer.save()
+
+    
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
+
+        if instance.user != self.request.user:
+            raise PermissionDenied("Permission denied.")
 
         instance.watched = not instance.watched
         instance.save()
