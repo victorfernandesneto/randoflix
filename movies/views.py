@@ -1,5 +1,5 @@
 import random
-from rest_framework import generics
+from rest_framework import generics, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
@@ -16,6 +16,11 @@ class MovieListCreateView(generics.ListCreateAPIView):
         return Movie.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
+        name = serializer.validated_data['name']
+        query = Movie.objects.filter(user=self.request.user).filter(name=name)
+        if query:
+            raise serializers.ValidationError(
+                {'message': 'Movie already registered for this user.'})
         serializer.save(user=self.request.user)
 
 
