@@ -29,9 +29,6 @@ class MovieRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = MovieSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_object(self):
-        return Movie.objects.get(pk=self.kwargs['pk'])
-
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
 
