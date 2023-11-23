@@ -3,9 +3,9 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from movies.models import Movie
 from movies.serializers import MovieSerializer
-from rest_framework.views import APIView
 
 
 class MovieListCreateView(generics.ListCreateAPIView):
@@ -26,7 +26,6 @@ class MovieRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         return Movie.objects.get(pk=self.kwargs['pk'])
-    
 
     def get(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -36,8 +35,7 @@ class MovieRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
 
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
-    
-    
+
     def perform_update(self, serializer):
         instance = self.get_object()
 
@@ -46,7 +44,6 @@ class MovieRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
 
         serializer.save()
 
-    
     def delete(self, request, *args, **kwargs):
         instance = self.get_object()
 
@@ -59,17 +56,17 @@ class MovieRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
         serializer = self.get_serializer(instance)
 
         return Response(serializer.data)
-    
+
 
 class MovieRandomizerView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        queryset = Movie.objects.filter(user=request.user).filter(watched=False)
+        queryset = Movie.objects.filter(
+            user=request.user).filter(watched=False)
         if queryset.exists():
             random_movie = random.choice(queryset)
             serializer = MovieSerializer(random_movie)
             return Response(serializer.data)
         else:
             return Response({"message": "No movies available"}, status=404)
-        
